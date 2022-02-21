@@ -22,24 +22,25 @@
             </div>
         </div>
         <!-- 右侧 -->
-<div class="right-wrapper">
-  <span class="v-link clickable">帮助中心</span>
-  <span v-if="name == ''" class="v-link clickable" @click="showLogin()" id="loginDialog">登录/注册</span>
-  <el-dropdown v-if="name != ''" @command="loginMenu">
-        <span class="el-dropdown-link">
-          {{ name }}<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-    <el-dropdown-menu class="user-name-wrapper" slot="dropdown">
-      <el-dropdown-item command="/user">实名认证</el-dropdown-item>
-      <el-dropdown-item command="/order">挂号订单</el-dropdown-item>
-      <el-dropdown-item command="/patient">就诊人管理</el-dropdown-item>
-      <el-dropdown-item command="/logout" divided>退出登录</el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
-</div>
-
+        <!-- 右侧 -->
+        <div class="right-wrapper">
+          <span class="v-link clickable">帮助中心</span>
+          <span v-if="name == ''" class="v-link clickable" @click="showLogin()" id="loginDialog">登录/注册</span>
+          <el-dropdown v-if="name != ''" @command="loginMenu">
+                <span class="el-dropdown-link">
+                  {{ name }}<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+            <el-dropdown-menu class="user-name-wrapper" slot="dropdown">
+              <el-dropdown-item command="/user">实名认证</el-dropdown-item>
+              <el-dropdown-item command="/order">挂号订单</el-dropdown-item>
+              <el-dropdown-item command="/patient">就诊人管理</el-dropdown-item>
+              <el-dropdown-item command="/logout" divided>退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
-         <!-- 登录弹出层 -->
+        </div>
+
+        <!-- 登录弹出层 -->
     <el-dialog :visible.sync="dialogUserFormVisible" style="text-align: left;" top="50px" :append-to-body="true"  width="960px" @close="closeDialog()">
       <div class="container">
 
@@ -103,18 +104,15 @@
         </div>
       </div>
     </el-dialog>
- <div></div>
+    <div></div>
     </div>
 </template>
-
 <script>
 import cookie from 'js-cookie'
 import Vue from 'vue'
-
 import userInfoApi from '@/api/userInfo'
 import smsApi from '@/api/msm'
 import hospitalApi from '@/api/hosp'
-
 import weixinApi from '@/api/user/weixin'
 
 const defaultDialogAtrr = {
@@ -152,6 +150,7 @@ export default {
   created() {
     this.showInfo()
   },
+
   mounted() {
     // 注册全局登录事件对象
     window.loginEvent = new Vue();
@@ -174,8 +173,16 @@ export default {
   },
 
   methods: {
+    loginCallback(name, token, openid) {
+      // 打开手机登录层，绑定手机号，改逻辑与手机登录一致
+      // if(openid != '') {
+      //   this.userInfo.openid = openid
+      //   this.showLogin()
+      // } else {
+        this.setCookies(name, token)
+      // }
+    },
 
-    
     // 绑定登录或获取验证码按钮
     btnClick() {
       // 判断是获取验证码还是登录
@@ -307,37 +314,27 @@ export default {
       window.location.href = '/hospital/' + item.hoscode
     },
 
+    weixinLogin() {
+      this.dialogAtrr.showLoginType = 'weixin'
+
+      weixinApi.getLoginParam().then(response => {
+        var obj = new WxLogin({
+          self_redirect:true,
+          id: 'weixinLogin', // 需要显示的容器id
+          appid: response.data.appid, // 公众号appid wx*******
+          scope: response.data.scope, // 网页默认即可
+          redirect_uri: response.data.redirectUri, // 授权成功后回调的url
+          state: response.data.state, // 可设置为简单的随机数加session用来校验
+          style: 'black', // 提供"black"、"white"可选。二维码的样式
+          href: '' // 外部css文件url，需要https
+        })
+      })
+    },
+
     phoneLogin() {
       this.dialogAtrr.showLoginType = 'phone'
       this.showLogin()
-    },
-    loginCallback(name, token, openid) {
-    // 打开手机登录层，绑定手机号，改逻辑与手机登录一致
-    if(openid != '') {
-       this.userInfo.openid = openid
-       this.showLogin()
-    } else {
-       this.setCookies(name, token)
     }
-},
-
-weixinLogin() {
-  this.dialogAtrr.showLoginType = 'weixin'
-
-  weixinApi.getLoginParam().then(response => {
-    var obj = new WxLogin({
-      self_redirect:true,
-      id: 'weixinLogin', // 需要显示的容器id
-      appid: response.data.appid, // 公众号appid wx*******
-      scope: response.data.scope, // 网页默认即可
-      redirect_uri: response.data.redirectUri, // 授权成功后回调的url
-      state: response.data.state, // 可设置为简单的随机数加session用来校验
-      style: 'black', // 提供"black"、"white"可选。二维码的样式
-      href: '' // 外部css文件url，需要https
-    })
-  })
-},
-
   }
 }
 </script>
