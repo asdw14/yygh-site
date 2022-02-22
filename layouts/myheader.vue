@@ -175,12 +175,12 @@ export default {
   methods: {
     loginCallback(name, token, openid) {
       // 打开手机登录层，绑定手机号，改逻辑与手机登录一致
-      // if(openid != '') {
-      //   this.userInfo.openid = openid
-      //   this.showLogin()
-      // } else {
+      if(openid != '') {
+        this.userInfo.openid = openid
+        this.showLogin()
+      } else {
         this.setCookies(name, token)
-      // }
+      }
     },
 
     // 绑定登录或获取验证码按钮

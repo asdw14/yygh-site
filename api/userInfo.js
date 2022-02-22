@@ -9,5 +9,20 @@ export default {
             method: `post`,
             data: userInfo
         })
-    }
+    },
+    getUserInfo() {
+        return request({
+          url: `${api_name}/auth/getUserInfo`,
+          method: `get`
+        })
+    },
+    //用户认证接口    
+    saveUserAuah(userAuah) {
+        return request({
+            url: `${api_name}/auth/userAuth`,
+            method: 'post',
+            data: userAuah
+          })
+        },
+        
 }
