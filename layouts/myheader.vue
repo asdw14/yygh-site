@@ -118,11 +118,11 @@ import weixinApi from '@/api/user/weixin'
 const defaultDialogAtrr = {
   showLoginType: 'phone', // 控制手机登录与微信登录切换
 
-  labelTips: '手机号码', // 输入框提示
+  labelTips: '邮箱号码', // 输入框提示
 
   inputValue: '', // 输入框绑定对象
-  placeholder: '请输入您的手机号', // 输入框placeholder
-  maxlength: 11, // 输入框长度控制
+  placeholder: '请输入您的邮箱号', // 输入框placeholder
+  maxlength: 50, // 输入框长度控制
 
   loginBtn: '获取验证码', // 登录按钮或获取验证码按钮文本
 
@@ -239,10 +239,15 @@ export default {
 
     // 获取验证码
     getCodeFun() {
-      if (!(/^1[34578]\d{9}$/.test(this.userInfo.phone))) {
+      // if (!(/^1[34578]\d{9}$/.test(this.userInfo.phone))) {
+      //   this.$message.error('手机号码不正确')
+      //   return;
+      // }
+      if (!(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(this.userInfo.phone))) {
         this.$message.error('手机号码不正确')
         return;
       }
+
 
       // 初始化验证码相关属性
       this.dialogAtrr.inputValue = ''
